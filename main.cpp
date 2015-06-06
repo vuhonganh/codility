@@ -1,6 +1,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <iostream>
+#include <string.h>
+#include <vector>
 
 using namespace std;
 
@@ -50,11 +52,51 @@ void test_L1_3()
 {
   int A[2] = {1000, -1000};
   int res = solution_L1_3(A, 2);
-
-  printf("res = %d\n", res);
-  
+  printf("res = %d\n", res);  
 }
 
+//check if an array is a permutation or not
+int solution_L2_1(int A[], int N)
+{
+  long check = 0;
+  bool * visited = NULL;
+  visited = static_cast <bool *> (malloc(N*sizeof(bool))) ;
+  if(visited == NULL)
+    exit(0);
+  
+  memset(visited, false, N);
+  
+  for(int i = 0; i < N; ++i)
+    {
+      if(A[i] > N || A[i] < 1) return 0;      
+      if(visited[A[i]-1]) { free(visited); return 0;}
+      check += (i+1);
+      check -= A[i];    
+      visited[A[i]-1] = true;
+    }
+  free(visited);
+  if(check == 0) return 1;
+  return 0;
+}
+int solution_L2_1_cpp(vector <int> &A)
+{
+  int N = (int) A.size();
+
+  vector<bool> visited;
+  visited.assign(N, false);
+  long check = 0;
+
+  for(int i = 0; i < N; ++i)
+    {
+      if(A[i] > N || A[i] < 1) return 0;
+
+      if(visited[A[i]-1]) return 0;
+      check += A[i];
+      check -= (i+1);
+      visited[A[i]-1] = true;
+    }
+  return (check == 0)? 1 : 0;
+}
 
 int main()
 {

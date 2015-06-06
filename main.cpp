@@ -97,6 +97,106 @@ int solution_L2_1_cpp(vector <int> &A)
     }
   return (check == 0)? 1 : 0;
 }
+//frog jump to river //100%
+int solution_L2_2(int X, vector<int> &A)
+{
+  vector<bool> exist(X, false);//note the idx = position - 1
+  int count = X;
+  for(int i = 0; i < (int) A.size(); ++i)
+    {
+      if(A[i] > X || A[i] < 1 || exist[A[i]-1]) continue;
+      else
+	{
+	  exist[A[i]-1] = true;
+	  count--;
+	  if(count == 0) return i;
+	}
+    }
+  return -1;
+}
+
+//counter setting: N=nb of counter// got 77% only
+vector<int> solution_L2_3(int N, vector<int> &A)
+{
+  vector<int> counter(N, 0);
+  int curMax = 0;
+  bool curMaxChange = false;
+  for(int i = 0; i < (int) A.size(); ++i)
+    {
+      if(curMaxChange && A[i] == N+1)
+	{
+	  //counter.assign(N, curMax);//because of this part so it will be extremly slow if all operations is set max counter
+	  fill(counter.begin(), counter.end(), curMax);//this is no different from above -> need to keep a flag to avoid doing unnesscary updates
+	  curMaxChange = false;//still not 100% when there are a lot of max counter operation --> need a curMin to update -> see remake 2
+	}
+      else
+	{
+	  if(A[i] > 0 && A[i] < N+1)
+	    {
+	      counter[A[i]-1]++;
+	      curMax = max(curMax, counter[A[i]-1]);
+	      curMaxChange = true;
+	    }
+	}
+    }
+  return counter;
+}
+
+//REMAKE max counter: 100%
+vector<int> solution_L2_3_rmk(int N, vector<int> &A)
+{
+  vector<int> counter(N, 0);
+  int curMax = 0;
+  int curMin = 0;//keep a curMin
+ 
+  for(int i = 0; i < (int) A.size(); ++i)
+    {
+      if(A[i] == N+1)
+	{
+	  //need to update all these array to curMax, however, we can do that later by keeping a curMin = curMax
+	  curMin = curMax;
+	}
+      else
+	{
+	  if(A[i] > 0 && A[i] < N+1)
+	    {
+	      if(counter[A[i]-1] < curMin) //haven't updated this cell b4
+		{
+		  counter[A[i]-1] = curMin;
+		}
+	      counter[A[i]-1]++;
+	      curMax = max(curMax, counter[A[i]-1]);
+	    }
+	}
+    }
+  
+  for(int i = 0; i < N; ++i)
+    {
+      counter[i] = max(curMin, counter[i]);
+    }  
+  return counter;
+  
+}
+
+//find min positive number that does not appear: 100%
+int solution_L2_4(vector<int> &A)
+{
+  int N = (int) A.size();
+  vector<bool> appeared(N, false);
+  for(int i = 0; i < N; ++i)
+    {
+      if(A[i] > 0 && A[i] < N+1)
+	{
+	  appeared[A[i]-1] = true;
+	}
+    }
+  for(int i = 0; i < N; ++i)
+    {
+      if(!appeared[i])
+	return (i+1);
+    }
+  return N+1;
+}
 
 int main()
 {

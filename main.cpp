@@ -197,6 +197,103 @@ int solution_L2_4(vector<int> &A)
     }
   return N+1;
 }
+//NOTE: use unsigned int every time possible if the value is not negative
+//passing car : 100% 
+int solution_L3_1(vector<int> &A)
+{
+  unsigned int countZero = 0;
+  unsigned int countPasses = 0;
+  //each time meet 1, count the number of zero met before
+  for(int i = 0; i < (int) A.size(); ++i)
+    {
+      if(A[i])
+	{
+	  countPasses += countZero;
+	}
+      else
+	{
+	  countZero++;
+	}
+    }
+  return (countPasses > 1000000000)? -1 : countPasses;
+}
+
+//number of integer in [A,B] which is divisible by K: 100%
+//NOTE: attention that they require O(1) in space and time
+int solution_L3_2(int A, int B, int K)
+{
+  int first = (A%K == 0) ? A : ((A/K) + 1)*K;
+  if(B < first) return 0;
+  else return (B-first)/K + 1;
+}
+
+//find min average slice of an array
+//NOTE: prove that min average slice can be formed by 2 or 3 elements
+//after that coding is not so difficult
+//-> lesson learnt: always check if the big problem can be solved by computing only a small part 
+int solution_L3_3(int A[], int N)
+{
+  //calculate all 2-elements slice and 3-element slice compare the minimum
+  
+  int minVal = 2000000000;
+  int idx = 0;
+  for(int i = 0; i < N-1; ++i)
+    {
+      int cur = (A[i] + A[i+1])*3;
+      if(cur < minVal)
+	{
+	  minVal = cur;
+	  idx = i;
+	}
+    }
+
+ for(int i = 0; i < N-2; ++i)
+    {
+      int cur = (A[i] + A[i+1] + A[i+2])*2;
+      if(cur < minVal)
+	{
+	  minVal = cur;
+	  idx = i;
+	}
+    }
+ return idx;
+}
+
+//find minimal impact of DNA sub sequences: 100%
+//MAIN IDEA: calcul prefix sum of OCCURENCES
+vector<int> solution_L3_4(string &S, vector<int> &P, vector<int> &Q)
+{
+  vector< vector<int> > occurs;
+  int N = S.length();
+  vector<int> a = {0, 0, 0, 0};
+  occurs.assign(N+1, a);//a little trick to deal with inclusive index 
+  char gen[4] = {'A', 'C', 'G', 'T'};
+  for(int i = 0; i < N; ++i)
+    {
+      for(int j = 0; j < 4; ++j)
+	{
+	  occurs[i+1][j] = (gen[j] == S[i])? 1 : 0;
+	  occurs[i+1][j] += occurs[i][j];
+	}
+     
+    }
+  int M = P.size();
+  vector<int> res(M, 0);
+  
+  for(int i = 0; i < M; ++i)
+    {
+      int s = P[i]; int e = Q[i];
+      for(int j = 0; j < 4; ++j)
+	{
+	  if(occurs[e+1][j] > occurs[s][j])
+	    {
+	      res[i] = j+1;
+	      break;
+	    } 
+	}
+    }
+  return res;
+}
 
 int main()
 {
